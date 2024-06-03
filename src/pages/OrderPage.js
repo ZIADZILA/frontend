@@ -2,11 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { get, post, put, del } from '../services/api';
-import { useParams, Link } from 'react-router-dom'; // Removed useNavigate
+import { useParams, Link } from 'react-router-dom';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Form from '../components/Form';
 import List from '../components/List';
+import styles from '../App.module.css';
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -60,7 +61,7 @@ const OrderPage = () => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <h1>Orders</h1>
       <Form onSubmit={handleSubmit}>
         <Input label="Product Name" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} />
