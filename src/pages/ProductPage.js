@@ -11,7 +11,7 @@ import styles from '../App.module.css';
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
-  const [form, setForm] = useState({ name: '', price: '', description: '' });
+  const [form, setForm] = useState({ name: '', price: '' });
   const [editingId, setEditingId] = useState(null);
   const { id } = useParams();
 
@@ -31,11 +31,15 @@ const ProductPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!form.name || !form.price) {
+      alert('Please fill out all fields.');
+      return;
+    }
     if (editingId) {
       put(`/product/${editingId}`, form)
         .then(() => {
           setProducts(products.map(product => (product._id === editingId ? form : product)));
-          setForm({ name: '', price: '', description: '' });
+          setForm({ name: '', price: '' });
           setEditingId(null);
         })
         .catch(error => console.error('Error updating product:', error));
@@ -43,7 +47,7 @@ const ProductPage = () => {
       post('/product', form)
         .then(response => {
           setProducts([...products, response.data]);
-          setForm({ name: '', price: '', description: '' });
+          setForm({ name: '', price: '' });
         })
         .catch(error => console.error('Error creating product:', error));
     }
@@ -66,7 +70,6 @@ const ProductPage = () => {
       <Form onSubmit={handleSubmit}>
         <Input label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <Input label="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} type="number" />
-        <Input label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         <Button type="submit">{editingId ? 'Update' : 'Create'}</Button>
       </Form>
       <List 

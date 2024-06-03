@@ -11,7 +11,7 @@ import styles from '../App.module.css';
 
 const InventoryPage = () => {
   const [inventories, setInventories] = useState([]);
-  const [form, setForm] = useState({ name: '', quantity: '', description: '' });
+  const [form, setForm] = useState({ name: '', quantity: '' });
   const [editingId, setEditingId] = useState(null);
   const { id } = useParams();
 
@@ -24,33 +24,42 @@ const InventoryPage = () => {
   useEffect(() => {
     if (id) {
       get(`/inventory/${id}`)
-        .then(response => setForm(response.data))
+        .then(response => setForm({
+          name: response.data.name,
+          quantity: response.data.quantity
+        }))
         .catch(error => console.error('Error fetching inventory:', error));
     }
   }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Form data on submit:', form); // Add logging
+    if (!form.name || !form.quantity) {
+      alert('Please fill out all fields.');
+      return;
+    }
     if (editingId) {
       put(`/inventory/${editingId}`, form)
         .then(() => {
           setInventories(inventories.map(inventory => (inventory._id === editingId ? form : inventory)));
-          setForm({ name: '', quantity: '', description: '' });
+          setForm({ name: '', quantity: '' });
           setEditingId(null);
         })
         .catch(error => console.error('Error updating inventory:', error));
     } else {
       post('/inventory', form)
         .then(response => {
+          console.log('Response data:', response.data); // Add logging
           setInventories([...inventories, response.data]);
-          setForm({ name: '', quantity: '', description: '' });
+          setForm({ name: '', quantity: '' });
         })
         .catch(error => console.error('Error creating inventory:', error));
     }
   };
 
   const handleEdit = (inventory) => {
-    setForm(inventory);
+    setForm({ name: inventory.name, quantity: inventory.quantity });
     setEditingId(inventory._id);
   };
 
@@ -66,7 +75,6 @@ const InventoryPage = () => {
       <Form onSubmit={handleSubmit}>
         <Input label="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <Input label="Quantity" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} type="number" />
-        <Input label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         <Button type="submit">{editingId ? 'Update' : 'Create'}</Button>
       </Form>
       <List 

@@ -31,6 +31,10 @@ const UserPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!form.name || !form.email) {
+      alert('Please fill out all fields.');
+      return;
+    }
     if (editingId) {
       put(`/user/${editingId}`, form)
         .then(() => {

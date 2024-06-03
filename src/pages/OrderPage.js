@@ -11,7 +11,7 @@ import styles from '../App.module.css';
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
-  const [form, setForm] = useState({ productName: '', totalPrice: '', description: '' });
+  const [form, setForm] = useState({ productName: '', totalPrice: '' });
   const [editingId, setEditingId] = useState(null);
   const { id } = useParams();
 
@@ -24,33 +24,42 @@ const OrderPage = () => {
   useEffect(() => {
     if (id) {
       get(`/order/${id}`)
-        .then(response => setForm(response.data))
+        .then(response => setForm({
+          productName: response.data.productName,
+          totalPrice: response.data.totalPrice
+        }))
         .catch(error => console.error('Error fetching order:', error));
     }
   }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('Form data on submit:', form); // Add logging
+    if (!form.productName || !form.totalPrice) {
+      alert('Please fill out all fields.');
+      return;
+    }
     if (editingId) {
       put(`/order/${editingId}`, form)
         .then(() => {
           setOrders(orders.map(order => (order._id === editingId ? form : order)));
-          setForm({ productName: '', totalPrice: '', description: '' });
+          setForm({ productName: '', totalPrice: '' });
           setEditingId(null);
         })
         .catch(error => console.error('Error updating order:', error));
     } else {
       post('/order', form)
         .then(response => {
+          console.log('Response data:', response.data); // Add logging
           setOrders([...orders, response.data]);
-          setForm({ productName: '', totalPrice: '', description: '' });
+          setForm({ productName: '', totalPrice: '' });
         })
         .catch(error => console.error('Error creating order:', error));
     }
   };
 
   const handleEdit = (order) => {
-    setForm(order);
+    setForm({ productName: order.productName, totalPrice: order.totalPrice });
     setEditingId(order._id);
   };
 
@@ -66,7 +75,6 @@ const OrderPage = () => {
       <Form onSubmit={handleSubmit}>
         <Input label="Product Name" value={form.productName} onChange={(e) => setForm({ ...form, productName: e.target.value })} />
         <Input label="Total Price" value={form.totalPrice} onChange={(e) => setForm({ ...form, totalPrice: e.target.value })} type="number" />
-        <Input label="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         <Button type="submit">{editingId ? 'Update' : 'Create'}</Button>
       </Form>
       <List 
