@@ -1,9 +1,9 @@
 // src/pages/HomePage.js
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from '../App.module.css';
 
+// Functional component definition for HomePage
 const HomePage = () => {
   return (
     <div className={styles.container}>
