@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage'; // Import the HomePage
 
 function App() {
   return (
+    // Router component for enabling routing in the application
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />

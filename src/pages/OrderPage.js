@@ -15,12 +15,14 @@ const OrderPage = () => {
   const [editingId, setEditingId] = useState(null);
   const { id } = useParams();
 
+  // Fetching all orders on component mount
   useEffect(() => {
     get('/order')
       .then(response => setOrders(response.data))
       .catch(error => console.error('Error fetching orders:', error));
   }, []);
 
+  // Fetching a specific order if an ID is provided in the route parameters
   useEffect(() => {
     if (id) {
       get(`/order/${id}`)
@@ -32,6 +34,8 @@ const OrderPage = () => {
     }
   }, [id]);
 
+  
+  // Handling form submission for creating or updating an order
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form data on submit:', form); // Add logging
@@ -58,11 +62,13 @@ const OrderPage = () => {
     }
   };
 
+  // Handling order edit
   const handleEdit = (order) => {
     setForm({ productName: order.productName, totalPrice: order.totalPrice });
     setEditingId(order._id);
   };
 
+  // Handling order deletion
   const handleDelete = (id) => {
     del(`/order/${id}`)
       .then(() => setOrders(orders.filter(order => order._id !== id)))
